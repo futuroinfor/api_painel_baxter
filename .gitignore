@@ -44,3 +44,8 @@ htmlcov/
 # ===== Outros =====
 *.tmp
 *.bak
+
+templates_original/
+templates_bkp/
+pacotes_windows/
+pacotes_offline/
