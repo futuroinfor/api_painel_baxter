@@ -1,0 +1,15 @@
+{% load static %}
+<section class="floor-container">
+	
+	<div class="floor-header">
+        <h2 class="floor-title">{% block titulo %}{% endblock %}</h2>
+        <span class="text-xs font-bold text-[#0a192f]/60 uppercase tracking-wider font-mono">{% block subtitulo %}{% endblock %}</span>
+    </div>
+
+	<div class="panels-grid">
+        {% block cards %}
+
+        {% endblock %}
+	</div>
+
+</section>

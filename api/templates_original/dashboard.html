@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painéis Star</title>
+    
+    <!-- CDNs Externas -->
+    <script src="https://tailwindcss.com"></script>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
+
+    <!-- Chamada do Arquivo CSS Isolado via Django -->
+    <link rel="stylesheet" href="{% static 'css/paineis_star.css' %}">
+</head>
+<body>
+
+    <header class="header-fixed">
+       <div class="header-content">
+        <!-- LOGO COM TAMANHO FORÇADO FIXO -->
+        <img src="https://wp.rededorsaoluiz.com.br/wp-content/uploads/sites/95/2025/01/10886-Logo-Memorial-Star-BRANCO.svg" style="height: 50px; width: auto;" alt="Logo">
+        
+        <div class="text-right text-white">
+            <h1 class="font-bold tracking-[0.2em] text-xs uppercase text-amber-100/90">Monitoramento dos Painéis</h1>
+            <div id="current-time" class="font-mono text-[16px] opacity-70">00:00:00</div>
+        </div>
+    </div>
+
+</div>
+
+        <!-- LINHA ANIMADA MAIS FINA (De 4px para 2px) -->
+        <div class="animated-line-container"><div class="animated-line"></div></div>
+    </header>
+
+
+    <!-- Onde o Django e o AJAX injetam as linhas fragmentadas -->
+    <div class="card-top" style="position: relative !important; display: block !important; clear: both !important; margin-top: 120px !important;"></div>
+    <div class="panel-grid" id="main-grid">
+        {% include "partials/linhas_tabela.html" %}
+    </div>
+
+    <script>
+        const grid = document.getElementById('main-grid');
+
+        function atualizarPainel() {
+            fetch('/dashboard/linhas/', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro na requisição dos dados do painel');
+                return response.text();
+            })
+            .then(html => {
+                grid.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar via AJAX:', error);
+            })
+            .finally(() => {
+                setTimeout(atualizarPainel, 10000);
+            });
+        }
+
+        setTimeout(atualizarPainel, 10000);
+
+        function clock() {
+            document.getElementById('current-time').innerText = new Date().toLocaleTimeString('pt-BR');
+        }
+        setInterval(clock, 1000);
+        clock();
+    </script>
+</body>
+</html>

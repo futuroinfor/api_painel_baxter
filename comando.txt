@@ -1,0 +1,11 @@
+pip install --no-index --find-links=./pacotes_windows -r requirements.txt
+
+
+nssm install NomeDoSeuServico
+
+
+Aba Application:Path: O caminho completo para o executável do Python dentro do seu ambiente virtual (Ex: C:\caminho_do_projeto\venv\Scripts\python.exe).Startup directory: O caminho da pasta raiz do seu projeto Django (Ex: C:\caminho_do_projeto).Arguments: O nome do script que criamos no Passo 1 (run_server.py).Aba Details (Opcional):Defina o Display name (Nome exibido na lista de serviços) e a Description.Aba Details / Startup type:Altere para Automatic para que a API inicie sozinha junto com o Windows.Clique em Install service. Uma mensagem confirmará o sucesso do processo.
+
+
+
+nssm remove NomeDoSeuServico confirm

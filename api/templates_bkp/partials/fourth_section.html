@@ -1,0 +1,32 @@
+{% extends "partials/base_sections.html" %}
+
+{% block titulo %}
+    13º Andar (Laudos), 14º Andar   &   15º Andar — Críticos & Apoio
+{% endblock %}
+
+{% block subtitulo %}
+    (Sessão 04)
+{% endblock %}
+
+{% block ambiente %}
+    Centro Cirúrgico e Afins
+{% endblock %}
+
+{% block cards %}
+    {% with tem_painel_secao=False %}
+        {% for painel in paineis %}
+
+            {% if painel.secao == '04' %}
+                <!-- {# Atualiza a variável se encontrar um painel da seção #} -->
+                {% with tem_painel_secao=True %}
+                    {% include "partials/conteudo_base.html" %}
+                {% endwith %}
+            {% endif %}
+        {% empty %}
+            <div style="grid-column: span 2; text-align: center; padding: 16px; background: white; border-radius: 4px; border: 1px dashed #d1d5db; color: #9ca3af; font-size: 12px;">
+                Nenhum painel cadastrado no sistema.
+            </div>
+        {% endfor %}
+    {% endwith %}
+{% endblock %}<!-- ========================================================================================================= -->
+       

@@ -1,0 +1,55 @@
+{% for painel in paineis %}
+<a href="#" class="panel-card" style="position: relative; transition: all 0.2s ease; padding: 5px 8px !important; border-radius: 4px; display: block; background: #ffffff; margin-bottom: 2px;">
+    <!-- LINHA 1: Identificação, Monitor e Status Geral -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <span class="hostname-text" style="font-size: 12px; font-weight: 700; color: #1f2937;">
+                {{ painel.hostname|escape }}
+            </span>
+            <!-- <span style="font-size: 9px; color: #9ca3af; font-family: monospace; background: #f3f4f6; padding: 1px 4px; border-radius: 2px;">
+                {{ painel.monitor|default:"M1" }}
+            </span> -->
+        </div>
+        
+        <!-- Status Geral Compacto -->
+        <!-- {% if painel.status|upper|cut:" " == 'OK' %}
+            <span style="font-size: 9px; font-weight: 800; color: #10b981;">ONLINE</span>
+        {% else %}
+            <span style="font-size: 9px; font-weight: 800; color: #ef4444;">OFFLINE</span>
+        {% endif %} -->
+    </div>
+
+    <!-- LINHA 2: Os Dois Indicadores de TV Lado a Lado (Finas Faixas Horizontais) -->
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-bottom: 4px;">
+        
+        <!-- MINI BOX: BAXTER -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 4px; padding: 2px 4px; border-radius: 3px; border: 1px solid;
+                    {% if painel.pn_baxter|upper == 'OK' %} background-color: #f0fdf4; border-color: #bbf7d0; color: #16803d; {% else %} background-color: #fef2f2; border-color: #fecaca; color: #b91c1c; {% endif %}">
+            <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24">
+                <path d="M21 6H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H3V8h18v10zM8.5 21l1.5-3h4l1.5 3h-7z"/>
+            </svg>
+            <span style="font-size: 9px; font-weight: 500; font-family: monospace;">BAXTER</span>
+        </div>
+
+        <!-- MINI BOX: CLÍNICO -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 4px; padding: 2px 4px; border-radius: 3px; border: 1px solid;
+                    {% if painel.pn_clinico|upper == 'OK' %} background-color: #f0fdf4; border-color: #bbf7d0; color: #16803d; {% else %} background-color: #fef2f2; border-color: #fecaca; color: #b91c1c; {% endif %}">
+            <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24">
+                <path d="M21 6H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H3V8h18v10zM8.5 21l1.5-3h4l1.5 3h-7z"/>
+            </svg>
+            <span style="font-size: 9px; font-weight: 500; font-family: monospace;">CLÍNICO</span>
+        </div>
+        
+    </div>
+
+    <!-- LINHA 3: Timestamps em Linha Única -->
+    <div style="display: flex; justify-content: space-between; font-family: monospace; font-size: 8px; color: #9ca3af; line-height: 1;">
+        <span>Log: {{ painel.data_login|default:"--" }}</span>
+        <span>Att: {{ painel.ultima_atualizacao|date:"H:i:s" }}</span>
+    </div>
+</a>
+{% empty %}
+<div class="col-span-full text-center py-4 bg-white rounded border border-dashed border-gray-200 text-gray-400 text-xs italic">
+    Nenhum painel monitorado até o momento.
+</div>
+{% endfor %}

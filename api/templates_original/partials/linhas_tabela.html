@@ -1,0 +1,92 @@
+{% regroup paineis by pavimento as pavimentos %}
+
+<!-- GRID EM TELA CHEIA: Ocupa exatamente 100% do monitor e gerencia o espaço vertical -->
+<div style="width: 100vw;  max-width: 100vw;  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); gap: 12px; padding: 12px; box-sizing: border-box; overflow: hidden;">
+  {% for grupo in pavimentos %}
+    <!-- CADA PAVIMENTO: Usa display flex para esticar verticalmente e dividir a altura sobressalente -->
+    <div style="width: 100%; height: 100%; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: #ffffff; border-radius: 6px; box-sizing: border-box; justify-content: space-between;">
+      
+      <!-- TÍTULO DO PAVIMENTO -->
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 4px 6px; background: #f3f4f6; border-left: 4px solid #2563eb; border-radius: 4px; box-sizing: border-box; flex-shrink: 0;">
+        <span style="font-size: 12px; font-weight: 800; color: #1f2937; text-transform: uppercase;">
+          {{ grupo.grouper|default:"Sem pavimento" }}
+        </span>
+        <span style="font-size: 9px; color: #6b7280; font-family: monospace;">
+          {{ grupo.list|length }} painel{{ grupo.list|length|pluralize:"is" }}
+        </span>
+      </div>
+
+      <!-- CONTAINER DO SCROLL INTERNO: Caso os cards passem da largura, o scroll acontece estritamente aqui dentro -->
+      <div style="display: flex; flex-direction: row; flex-wrap: nowrap; gap: 4px; width: 100%; max-width: 100%; overflow-x: auto; padding-top: 4px; padding-bottom: 4px; box-sizing: border-box; -webkit-overflow-scrolling: touch; flex-grow: 1; align-items: center;">
+        {% for painel in grupo.list %}
+          <!-- CARD INDIVIDUAL -->
+          <a href="#" class="panel-card" style="flex: 0 0 auto; width: 150px; box-sizing: border-box; padding: 5px; border-radius: 5px; display: block; background: #ffffff; border: 1px solid #dfe3e8; text-decoration: none;">
+            
+            <!-- HOSTNAME -->
+            <div style="margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ painel.hostname|escape }}">
+              <span style="font-size: 11px; font-weight: 700; color: #1f2937;">
+                {{ painel.hostname|escape }}
+              </span>
+            </div>
+
+            <!-- STATUS -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 4px;">
+              <!-- PAINEL 1 -->
+              {% if painel.st_monitor_2 == '' %}
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 36px; border-radius: 4px; border: 1px solid; {% if painel.st_monitor_1|upper == 'OK' %} background: #f0fdf4; border-color: #bbf7d0; color: #16803d; {% else %} background: #fef2f2; border-color: #fecaca; color: #b91c1c; {% endif %}">
+                  <svg style="width: 130px; height: 14px; fill: currentColor;" viewBox="0 0 24 24">
+                    <path d="M21 6H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H3V8h18v10zM8.5 21l1.5-3h4l1.5 3h-7z"/>
+                  </svg>
+                  {% if painel.st_monitor_1 == 'OK' %}
+                    <span style="font-size: 8px; font-family: monospace; font-weight: bold;">{{painel.monitor_1}}</span>
+                  {% endif %}
+                  {% if painel.st_monitor_2 == 'OK' %}
+                    <span style="font-size: 8px; font-family: monospace; font-weight: bold;">{{painel.monitor_2}}</span>
+                  {% endif %}
+                </div>
+              {% else %}
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 36px; border-radius: 4px; border: 1px solid; {% if painel.st_monitor_2|upper == 'OK' %} background: #f0fdf4; border-color: #bbf7d0; color: #16803d; {% else %} background: #fef2f2; border-color: #fecaca; color: #b91c1c; {% endif %}">
+                  <svg style="width: 14x; height: 14px; fill: currentColor;" viewBox="0 0 24 24">
+                    <path d="M21 6H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H3V8h18v10zM8.5 21l1.5-3h4l1.5 3h-7z"/>
+                  </svg>
+                  {% if painel.st_monitor_1 == 'OK' %}
+                    <span style="font-size: 8px; font-family: monospace; font-weight: bold;">{{painel.monitor_1}}</span>
+                  {% endif %}
+                  {% if painel.st_monitor_2 == 'OK' %}
+                    <span style="font-size: 8px; font-family: monospace; font-weight: bold;">{{painel.monitor_2}}</span>
+                  {% endif %}
+                </div>
+              {% endif %}
+
+              {% if painel.st_monitor_2 %}
+                <!-- PAINEL 2 -->
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 36px; border-radius: 4px; border: 1px solid; {% if painel.pn_clinico|upper == 'OK' %} background: #f0fdf4; border-color: #bbf7d0; color: #16803d; {% else %} background: #fef2f2; border-color: #fecaca; color: #b91c1c; {% endif %}">
+                  <svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24">
+                    <path d="M21 6H3c-1.1 0-2 .9-2 2v10c0 1.1-.9 2-2-2V8c0-1.1.9-2-2-2zm0 12H3V8h18v10zM8.5 21l1.5-3h4l1.5 3h-7z"/>
+                  </svg>
+                  {% if painel.st_monitor_1 == 'OK' %}
+                    <span style="font-size: 8px; font-family: monospace; font-weight: bold;">{{painel.monitor_1}}</span>
+                  {% endif %}
+                  {% if painel.st_monitor_2 == 'OK' %}
+                    <span style="font-size: 8px; font-family: monospace; font-weight: bold;">{{painel.monitor_2}}</span>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- DATAS -->
+            <div style="display: flex; justify-content: space-between; gap: 2px; font-family: monospace; font-size: 8px; color: #9ca3af; line-height: 1.2;">
+              <span>Log: {{ painel.data_login|default:"--" }}</span>
+              <span>Att: {{ painel.ultima_atualizacao|date:"H:i:s" }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+
+    </div>
+  {% empty %}
+    <div style="grid-column: span 2; text-align: center; padding: 16px; background: white; border-radius: 4px; border: 1px dashed #d1d5db; color: #9ca3af; font-size: 12px;">
+      Nenhum painel monitorado até o momento.
+    </div>
+  {% endfor %}
+</div>

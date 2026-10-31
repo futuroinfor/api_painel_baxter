@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<!-- Define o tipo de documento como HTML5 para que o navegador renderize a página nos padrões modernos -->
+<html lang="pt-br">
+<head>
+  <!-- Define a codificação de caracteres UTF-8 para evitar erros de exibição em acentos e símbolos -->
+  <meta charset="UTF-8">
+
+  <!-- Configura a viewport para garantir o dimensionamento correto do layout na tela -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Título oficial que aparece na aba superior do navegador web -->
+  <title>Painéis Star - Central de Monitoramento Responsiva</title>
+
+  <!-- Importa o framework Tailwind CSS via CDN para estilização com classes utilitárias diretas -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Importa a família de fontes 'Inter' do Google Fonts com pesos variados para melhor legibilidade -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Início do bloco de estilos CSS customizados para efeitos específicos do monitoramento -->
+  <style>
+    /* O escopo :root guarda variáveis globais de cores para fácil manutenção do layout */
+    :root {
+      --star-navy: #0a192f;     /* Azul escuro - Cor de fundo principal do cabeçalho institucional */
+      --star-gold: #c5a059;     /* Dourado - Cor de prestígio usada em logotipos, bordas e realces */
+      --star-brown: #4b3832;    /* Marrom escuro - Cor base aplicada para a leitura de textos comuns */
+      --star-bg: #fdfbf7;       /* Bege bem claro - Cor de fundo da página que minimiza a fadiga dos olhos */
+      --star-danger: #ef4444;   /* Vermelho - Indicador visual crítico para representar o status Offline */
+      --star-success: #10b981;  /* Verde - Indicador visual estável para representar o status Online */
+    }
+
+    /* Aplica estilizações iniciais fundamentais no corpo inteiro do documento */
+    body {
+      font-family: 'Inter', sans-serif; /* Força todo o site a utilizar a fonte limpa 'Inter' */
+      background-color: var(--star-bg); /* Define a cor de fundo bege claro através da variável global */
+      color: var(--star-brown);         /* Aplica a cor de texto marrom escuro como padrão da página */
+      margin: 0;                        /* Zera as margens externas padrão inseridas nativamente pelo navegador */
+      padding-top: 150px;               /* Cria espaço no topo para o cabeçalho fixo não cobrir os blocos de cards */
+      min-height: 100vh;                /* Determina que o fundo ocupará no mínimo 100% da altura da tela visível */
+      box-sizing: border-box;           /* Garante que paddings e bordas fiquem inclusos no cálculo de largura dos elementos */
+    }
+
+    /* HEADER FIXO - Barra de topo escura travada no topo da tela durante a rolagem */
+    .header-fixed {
+      background: var(--star-navy);     /* Aplica o fundo azul escuro corporativo no cabeçalho */
+      position: fixed;                  /* Fixa o elemento no topo; ele não se move ao rolar a página para baixo */
+      top: 0;                           /* Cola o elemento na linha do limite superior absoluto da tela */
+      left: 0;                          /* Alinha a extremidade esquerda do cabeçalho na borda lateral esquerda */
+      right: 0;                         /* Alinha a extremidade direita do cabeçalho na borda lateral direita (100% largura) */
+      z-index: 1050;                    /* Coloca o cabeçalho em uma camada de profundidade superior a qualquer outro bloco */
+      box-shadow: 0 4px 25px rgba(0,0,0,0.35); /* Adiciona uma sombra projetada escura na parte de baixo da barra */
+    }
+
+    /* Define o alinhamento e distribuição dos elementos internos contidos no cabeçalho */
+    .header-content {
+      padding: 1.2rem 3.5rem;           /* Adiciona espaçamento interno vertical de 1.2rem e 3.5rem nas laterais */
+      display: flex;                    /* Ativa o Flexbox para organizar os componentes internos em formato de linha */
+      justify-content: space-between;   /* Empurra a logomarca para a esquerda e a caixa do relógio para a direita */
+      align-items: center;              /* Centraliza e iguala os textos verticalmente pelo meio da linha */
+    }
+
+    /* Configura o visual da logomarca principal disposta no cabeçalho */
+    .logo-star {
+      font-size: 1.8rem;                /* Fonte ampliada para excelente leitura à distância em telas de TV de 55" */
+      color: var(--star-gold);          /* Aplica a cor dourada institucional configurada no :root */
+      font-weight: 800;                 /* Define a tipografia com peso extra-negrito de forte impacto */
+      letter-spacing: 2px;              /* Adiciona 2 pixels de vão livre entre cada caractere para fins de design */
+    }
+
+    /* LINHA DE GRADIENTE ANIMADA - Fica posicionada logo abaixo da estrutura do cabeçalho */
+    .animated-line-container {
+      width: 100%;                      /* Ocupa a totalidade de largura horizontal disponível na tela */
+      height: 4px;                      /* Determina a espessura física vertical da linha em exatos 4 pixels */
+      overflow: hidden;                 /* Mascara e oculta fragmentos do brilho móvel que ultrapassarem os limites da tela */
+      background: var(--star-navy);     /* Cor de fundo de apoio em tom azul escuro */
+      position: relative;               /* Permite o posicionamento absoluto interno do elemento filho */
+    }
+
+    /* O elemento interno deslizante que produz o efeito óptico de fluxo e brilho */
+    .animated-line {
+      height: 100%;                     /* Ocupa 100% da altura total (4px) estabelecida pelo contêiner pai */
+      width: 200%;                      /* Configura a largura em dobro para dar curso à animação infinita */
+      position: absolute;               /* Garante liberdade para movimentar o bloco livremente no eixo X */
+      /* Desenha o degradê de cores em 90 graus que caminha pelo espectro: Azul -> Dourado -> Azul */
+      background: linear-gradient(90deg, var(--star-navy) 0%, var(--star-gold) 50%, var(--star-navy) 100%);
+      animation: moveLine 3s linear infinite; /* Vincula a animação 'moveLine' em ciclo contínuo de 3 segundos */
+    }
+
+    /* Mapeamento de quadros (keyframes) para guiar o deslocamento da linha de gradiente */
+    @keyframes moveLine {
+      0% { transform: translateX(-50%); } /* Inicia o ciclo deslocada metade de seu tamanho para o lado esquerdo */
+      100% { transform: translateX(0%); } /* Encerra o ciclo na posição original, reiniciando o loop de forma fluida */
+    }
+
+    /* CONTÊINER DASHBOARD - Agrupa todos os pavimentos de forma vertical organizada */
+    .dashboard-container {
+      padding: 20px 40px;               /* Aplica espaçamento de respiro nas extremidades da tela (20px vertical, 40px horizontal) */
+      display: flex;                    /* Habilita o Flexbox estrutural */
+      flex-direction: column;           /* Força as seções horizontais a se empilharem uma abaixo da outra */
+      gap: 30px;                        /* Cria uma distância padrão e fixa de 30px entre um pavimento e outro */
+    }
+
+    /* SEÇÃO DE PAVIMENTO - Linha horizontal robusta que engloba um grupo de cartões/andares */
+    .floor-container {
+      background: rgba(255, 255, 255, 0.85); /* Fundo branco limpo com opacidade elegante ajustada em 85% */
+      border: 1px solid #e7e0d5;        /* Aplica uma borda fina de contorno na cor cinza-bege neutra */
+      border-radius: 14px;              /* Suaviza a estrutura aplicando arredondamento de 14px em suas quinas */
+      padding: 22px;                    /* Cria preenchimento interno para afastar os cards das bordas limitadoras */
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02); /* Aplica sombreamento difuso leve para dar percepção de profundidade */
+    }
+
+    /* Faixa de cabeçalho interna de identificação de cada andar/pavimento */
+    .floor-header {
+      display: flex;                    /* Alinha o título descritivo do pavimento e o contador na mesma linha horizontal */
+      justify-content: space-between;   /* Afasta o título para o lado esquerdo e o rótulo para o lado direito */
+      align-items: center;              /* Mantém os componentes perfeitamente alinhados pelo centro vertical */
+      border-bottom: 2px solid #e7e0d5; /* Desenha uma linha horizontal sutil divisória logo abaixo do título */
+      padding-bottom: 12px;             /* Cria espaçamento de respiro entre o texto e a linha divisória inferior */
+      margin-bottom: 22px;              /* Garante vão livre de afastamento entre a linha divisória e os cartões */
+    }
+
+    /* Configuração visual do texto do título do pavimento */
+    .floor-title {
+      font-size: 1.15rem;               /* Tamanho de caractere ampliado para facilitar a leitura em TVs de 55" a metros de distância */
+      font-weight: 700;                 /* Define estilo tipográfico em negrito forte */
+      color: var(--star-navy);          /* Alimenta a cor do título com a variável azul escuro */
+      border-left: 4px solid var(--star-gold); /* Cria uma barra sólida dourada de destaque encostada no lado esquerdo do título */
+      padding-left: 12px;               /* Afasta o início das letras da barra dourada lateral esquerda */
+      text-transform: uppercase;        /* Converte automaticamente todas as letras normais em maiúsculas */
+      letter-spacing: 0.5px;            /* Alarga discretamente o espaçamento entre caracteres para um visual moderno */
+    }
+
+    /* GRIDE DE PAINÉIS RESPONSIVA - Distribui cartões na horizontal e pula linhas automaticamente ao faltar espaço */
+    .panels-grid {
+      display: grid;                    /* Ativa o motor de renderização baseado em tabelas flexíveis CSS Grid Layout */
+      /* CONFIGURAÇÃO PEDIDA: Cria colunas que se preenchem sozinhas (auto-fill). Cada cartão terá tamanho mínimo de 260px.
+         Se a TV de 55 polegadas tiver espaço horizontal, eles preenchem a mesma linha; se faltar espaço, descem organizados para baixo. */
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;                        /* Determina um vão fixo quadrangular de 20px de isolamento livre entre os cartões */
+    }
+
+    /* CARD DE PAINEL - Caixa base que exibe os dados reais extraídos e consolidados de cada sistema */
+    .panel-card {
+      background: #ffffff;              /* Cor padrão interna do fundo do cartão de monitoramento definida como branco puro */
+      border: 1px solid #e7e0d5;        /* Contorno fino acinzentado delimitando o escopo do bloco do cartão */
+      border-radius: 12px;              /* Suaviza os cantos aplicando arredondamento de 12px nas extremidades */
+      padding: 18px;                    /* Adiciona margem de preenchimento interna para afastar os textos das bordas do card */
+      display: flex;                    /* Habilita o modelo Flexbox interno para organizar as linhas de dados */
+      flex-direction: column;           /* Empilha as informações textuais verticalmente de cima para baixo */
+      justify-content: space-between;   /* Envia o identificador principal para o topo e o bloco de logs para a base do card */
+      min-height: 145px;                /* Define altura mínima padrão para manter simetria e alinhamento visual perfeito na TV */
+      transition: all 0.3s ease;        /* Configura tempo de transição suave de 0.3s para trocas de estados cromáticos */
+    }
+
+    /* PONTO DE STATUS - Circunferência que serve como luz de sinalização para energia/comunicação */
+    .status-dot {
+      width: 14px;                      /* Determina a largura física do círculo em pixels */
+      height: 14px;                     /* Determina a altura física do círculo em pixels */
+      border-radius: 50%;               /* Recorta as quinas do elemento aplicando formato de circunferência perfeita */
+      display: inline-block;            /* Define comportamento espacial do componente como bloco embutido em linha */
+      position: relative;               /* Permite fixar efeitos visuais virtuais (pseudo-elementos) com precisão de coordenadas */
+    }
+
+    /* Indicador ativo estável: Cor Verde (Usado em sistemas operando Online) */
+    .status-online {
+      background-color: var(--star-success); /* Pinta a lâmpada circular com o tom verde estável de sucesso */
+    }
+
+    /* Indicador ativo de alerta: Cor Vermelha (Usado em sistemas com falha/atraso Offline) */
+    .status-offline {
+      background-color: var(--star-danger);  /* Pinta a lâmpada circular com o tom vermelho de perigo/alerta */
+    }
+
+    /* EFEITO PULSANTE DO STATUS OFFLINE: Injeta um anel translúcido sobreposto ao ponto vermelho central */
+    .status-offline::after {
+      content: '';                      /* Declaração padrão obrigatória para inicializar uma tag virtual vazia no CSS */
+      position: absolute;               /* Faz o anel flutuar livremente colado acima do ponto fixo central */
+      top: 0; left: 0; width: 100%; height: 100%; /* Sincroniza a proporção e tamanho 1:1 do anel com o ponto base */
+      border-radius: 50%;               /* Mantém o formato perfeitamente esférico para o anel de expansão de onda */
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8); /* Cria a projeção de sombra vermelha inicial e concentrada */
+      animation: dotPulse 1.6s infinite ease-in-out; /* Aciona e roda a animação de pulsação perpétua 'dotPulse' */
+    }
+
+    /* Mapeamento de transformação de tamanho e opacidade do anel de sinalização vermelho */
+    @keyframes dotPulse {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8); }   /* Inicia concentrado e visível nas bordas do círculo central */
+      70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }  /* Expande o anel de sombra até 12px de raio externo, tornando-o transparente */
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }    /* Encerra o ciclo totalmente invisível para reiniciar o loop suave */
+    }
+
+    /* MUDANÇA IMPLEMENTADA: Efeito Pulsante Integral adicionado ao plano de fundo do Cartão Inteiro se o status for Offline */
+    .card-offline-pulse {
+      /* Aciona a animação de pulsação do bloco completo (fundo e contorno piscando de forma sincronizada) */
+      animation: cardPulse 1.6s infinite ease-in-out;
+    }
+
+    /* Mapeamento passo a passo de luminosidade e cor para os blocos em estado de falha/atraso */
+    @keyframes cardPulse {
+      0% {
+        background-color: #ffffff;      /* Começa o passo com fundo limpo em cor branca comum */
+        border-color: #e7e0d5;          /* Mantém o contorno sutil acinzentado padrão */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.02); /* Sombra comum de repouso */
+      }
+      50% {
+        background-color: rgba(239, 68, 68, 0.06); /* Transiciona o fundo para um tom vermelho bem suave translúcido (6% força) */
+        border-color: rgba(239, 68, 68, 0.35);   /* Aumenta a percepção visual aplicando borda vermelha macia */
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.12); /* Projeta um halo de luz vermelho sutil ao redor do cartão na tela da TV */
+      }
+      100% {
+        background-color: #ffffff;      /* Retorna em degradê suave para a matiz branca padrão inicial */
+        border-color: #e7e0d5;          /* Restaura a cor neutra da borda */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.02); /* Restaura o sombreamento padrão do cartão */
+      }
+    }
+  </style>
+
+</head>
+
+
+<body>
+
+  <!-- Estrutura do cabeçalho superior fixo institucional -->
+
+  <header class="header-fixed">
+        <div class="header-content">
+            <!-- LOGO OFICIAL MEMORIAL STAR -->
+            <img src="https://wp.rededorsaoluiz.com.br/wp-content/uploads/sites/95/2025/01/10886-Logo-Memorial-Star-BRANCO.svg" class="h-10" alt="Logo">
+            
+            <div class="text-right text-white">
+                <h1 class="font-bold tracking-[0.2em] text-xs uppercase text-amber-100/90">Monitoramento de Status de Painéis</h1>
+                <div id="current-time" class="font-mono text-[16px] opacity-70">00:00:00</div>
+            </div>
+        </div>
+        <div class="animated-line-container"><div class="animated-line"></div></div>
+    </header>
+  </header>
+
+
+
+
+
+
+  <!-- Área de conteúdo principal onde estão distribuídos os pavimentos horizontais -->
+  <main class="dashboard-container">
+
+
+
+
+
+
+    <!-- PAVIMENTO 01 - Agrupa painéis correspondentes ao SUB-SOLO, TÉRREO, 1º E 2ºAndar -->
+
+    <section class="floor-container">
+      <div class="floor-header">
+        <h2 class="floor-title">Pavimento  — SUB-SOLO, TÉRREO, 1º E 2ºAndar</h2>
+        <span class="text-xs font-bold text-[#0a192f]/60 uppercase tracking-wider font-mono">001</span>
+      </div>
+
+      <!-- Malha responsiva que organiza os cartões horizontalmente e quebra para baixo se faltar espaço -->
+      <div class="panels-grid">
+
+
+
+        <!-- Card Painel: PST08A01 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">RECEP PAINEL SADT</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <!-- Luz indicadora verde para representar estabilidade online -->
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-16 08:57:37</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:40 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST08A02 (Status: Offline com Efeito Pulsante no fundo e na luz) -->
+        <div class="panel-card shadow-sm card-offline-pulse">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">RECEP TOTEN SADT</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <!-- Luz indicadora vermelha piscante para alertar falha ou atraso de sincronia -->
+            <span class="status-dot status-offline"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 15:05:32</div>
+            <div class="text-[#ef4444] font-bold mt-0.5">Att: 09:18:49 • OFFLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST08A03 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">RECEP PAINEL URG</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 15:08:30</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:22 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST08A04 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">RECEP TOTEN URG</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 15:10:32</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:37 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST09A01 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PSTTEA01 PST ENF PA</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 14:05:19</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:18:57 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST09A02 (Status: Offline com Efeito Pulsante) -->
+        <div class="panel-card shadow-sm card-offline-pulse">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PSTTEA02 PST ENF SADT</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-offline"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-14 18:34:24</div>
+            <div class="text-[#ef4444] font-bold mt-0.5">Att: 09:19:39 • OFFLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST09A03 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">RESULTADOS DE EXAMES</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 15:17:51</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:12 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST09A04 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">TRIAGEM URGENCIA</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-14 07:41:56</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:03 • ONLINE</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+
+
+
+
+
+
+
+    <!-- PAVIMENTO 01 - Agrupa painéis correspondentes ao 8º e 9º Andar -->
+    <section class="floor-container">
+      <div class="floor-header">
+        <h2 class="floor-title">Pavimento UTI'S — 8º e 9º Andar</h2>
+        <span class="text-xs font-bold text-[#0a192f]/60 uppercase tracking-wider font-mono">002</span>
+      </div>
+
+      <!-- Malha responsiva que organiza os cartões horizontalmente e quebra para baixo se faltar espaço -->
+      <div class="panels-grid">
+
+        <!-- Card Painel: PST08A01 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST08A01 PST ENFERM. 01</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <!-- Luz indicadora verde para representar estabilidade online -->
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-16 08:57:37</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:40 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST08A02 (Status: Offline com Efeito Pulsante no fundo e na luz) -->
+        <div class="panel-card shadow-sm card-offline-pulse">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST08A02 PST ENFERM. 02</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <!-- Luz indicadora vermelha piscante para alertar falha ou atraso de sincronia -->
+            <span class="status-dot status-offline"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 15:05:32</div>
+            <div class="text-[#ef4444] font-bold mt-0.5">Att: 09:18:49 • OFFLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST08A03 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST08A03 PST ENFERM. 03</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 15:08:30</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:22 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST08A04 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST08A04 PST ENFERM. 04</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 15:10:32</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:37 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST09A01 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST09A01 PST ENFERM. 01</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 14:05:19</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:18:57 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST09A02 (Status: Offline com Efeito Pulsante) -->
+        <div class="panel-card shadow-sm card-offline-pulse">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST09A02 PST ENFERM. 02</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-offline"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-14 18:34:24</div>
+            <div class="text-[#ef4444] font-bold mt-0.5">Att: 09:19:39 • OFFLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST09A03 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST09A03 PST ENFERM. 03</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 15:17:51</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:12 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST09A04 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST09A04 PST ENFERM. 04</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-14 07:41:56</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:03 • ONLINE</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+
+
+
+
+
+
+
+    <!-- PAVIMENTO 02 - Agrupa painéis correspondentes ao 10º 11º e 12º Andar -->
+
+    <section class="floor-container">
+      <div class="floor-header">
+        <h2 class="floor-title">Pavimento UNI-INTERNAÇÃO e TMO — 10º 11º e 12º Andar</h2>
+        <span class="text-xs font-bold text-[#0a192f]/60 uppercase tracking-wider font-mono">003</span>
+      </div>
+      <div class="panels-grid">
+
+        <!-- Card Painel: PST10A01 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST10A01 PST DE ENFERM. 01</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 14:29:14</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:30 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST10A02 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST10A02 PST ENFERM. 02</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 14:37:37</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:18:49 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST10TMO (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST10TMO PST ENFERM. 03</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 14:35:43</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:47 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST11A01 (Status: Offline com Efeito Pulsante) -->
+        <div class="panel-card shadow-sm card-offline-pulse">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST11A01 PST ENFERM. 01</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-offline"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 14:44:44</div>
+            <div class="text-[#ef4444] font-bold mt-0.5">Att: 09:19:34 • OFFLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST11A02 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST11A02 PST ENFERM. 02</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 18:39:09</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:18:51 • ONLINE</div>
+          </div>
+        </div>
+
+
+        <!-- Card Painel: PST12A01 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST12A01 PST ENFERM. 01</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-17 09:00:38</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:40 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST12A02 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST12A02 PST ENFERM. 02</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-16 16:15:48</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:25 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST13A01 (Status: Offline com Efeito Pulsante) -->
+        <div class="panel-card shadow-sm card-offline-pulse">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST13A01 PST ENFERM. 01</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-offline"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 16:27:15</div>
+            <div class="text-[#ef4444] font-bold mt-0.5">Att: 09:19:30 • OFFLINE</div>
+          </div>
+        </div>
+
+
+        <!-- Card Painel: PST13A02 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST13A02 PST ENFERM. 02</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 16:29:42</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:10 • ONLINE</div>
+          </div>
+        </div>
+
+
+
+        <!-- Card Painel: PST13A03 (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST13A03 SUB-PST ENFERM.</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 16:29:42</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:10 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST13A04 SL. DE LAUDOS (Status: Online) -->
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST13A04 SL. DE LAUDOS </h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 16:29:42</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:10 • ONLINE</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+
+    <!-- PAVIMENTO 03 - Agrupa painéis correspondentes ao Centro-cirurgico — 13º e 14º e 15º Andar -->
+
+    <section class="floor-container">
+      <div class="floor-header">
+        <h2 class="floor-title">Pavimento Centro Cirurgico — 13º e 14º e 15º Andar</h2>
+        <span class="text-xs font-bold text-[#0a192f]/60 uppercase tracking-wider font-mono">004</span>
+      </div>
+      <div class="panels-grid">
+
+
+        <!-- Card Painel: PST14A01 C. CIRURG. HEMO(Status: Online) -->
+
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST14A01 BLOCO PST. HEMO</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-17 09:00:38</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:40 • ONLINE</div>
+          </div>
+        </div>
+
+
+
+        <!-- Card Painel: PST14A02 C. CIRURG. SRPA(Status: Online) -->
+
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST14A02 BLOCO SRPA</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-16 16:15:48</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:25 • ONLINE</div>
+          </div>
+        </div>
+
+
+
+        <!-- Card Painel: PST14A03 CME ARSENAL OPME (Status: Offline com Efeito Pulsante) -->
+
+        <div class="panel-card shadow-sm card-offline-pulse">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST14A03 CME ARSENAL</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-offline"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 16:27:15</div>
+            <div class="text-[#ef4444] font-bold mt-0.5">Att: 09:19:30 • OFFLINE</div>
+          </div>
+        </div>
+
+
+
+        <!-- Card Painel: PST14A04 C.M.E - PAINEL PREPARARAÇÃO(Status: Online) -->
+
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST14A04 CME PREPARAÇÃO</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 16:29:42</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:10 • ONLINE</div>
+          </div>
+        </div>
+
+
+
+
+        <!-- Card Painel: PST14A05 C. CIRURG. CORREDOR (Status: Online) -->
+
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST14A05 BLOCO CORREDOR</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 16:29:42</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:10 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PST15A01 REPOUSO MÉDICO(Status: Online) -->
+
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PST15A01 REPOUSO MÉDICO</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 16:29:42</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:10 • ONLINE</div>
+          </div>
+        </div>
+
+        <!-- Card Painel: PRÓXIMO (Status: Online) -->
+
+        <div class="panel-card shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-base text-[#0a192f] tracking-tight">PRÓXIMO</h3>
+              <p class="text-[11px] font-bold text-[#c5a059] uppercase mt-0.5">BAXTER / CLÍNICO</p>
+            </div>
+            <span class="status-dot status-online"></span>
+          </div>
+          <div class="mt-4 pt-2 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            <div>Log: 2026-09-13 16:29:42</div>
+            <div class="text-[#10b981] font-bold mt-0.5">Att: 09:19:10 • ONLINE</div>
+          </div>
+        </div>
+
+
+
+
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

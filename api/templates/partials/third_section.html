@@ -1,0 +1,32 @@
+{% extends "partials/base_sections.html" %}
+
+{% block titulo %}
+    10º, 11º, 12º E 13º Andar (Postos) — UNI Internação
+{% endblock %}
+
+{% block subtitulo %}
+    (Sessão 03)
+{% endblock %}
+
+{% block ambiente %}
+    UNI Internação
+{% endblock %}
+
+{% block cards %}
+    {% with tem_painel_secao=False %}
+        {% for painel in paineis %}
+
+            {% if painel.secao == '03' %}
+                <!-- {# Atualiza a variável se encontrar um painel da seção #} -->
+                {% with tem_painel_secao=True %}
+                    {% include "partials/conteudo_base.html" %}
+                {% endwith %}
+            {% endif %}
+        {% empty %}
+            <div style="grid-column: span 2; text-align: center; padding: 16px; background: white; border-radius: 4px; border: 1px dashed #d1d5db; color: #9ca3af; font-size: 12px;">
+                Nenhum painel cadastrado no sistema.
+            </div>
+        {% endfor %}
+    {% endwith %}
+{% endblock %}<!-- ========================================================================================================= -->
+       

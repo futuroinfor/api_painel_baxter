@@ -1,0 +1,34 @@
+<div class="{% if painel.monitor_1.prefixo and painel.monitor_2.prefixo in painel.paineis %} panel-card shadow-sm {% else %} panel-card shadow-sm card-offline-pulse {% endif %}">
+    
+    <div class="flex justify-between items-start gap-1">
+        <span class="font-bold text-[12px] text-[#0a192f] tracking-tight gap-1">{{ painel.descricao }}</span>
+        
+        <div>
+    
+            <div class="flex justify-between items-center gap-1">
+            {% if painel.paineis|slice:":3" %}
+                <div class="flex flex-col items-center gap-1">
+                    <span class="status-dot {% if painel.monitor_1.prefixo in painel.paineis %} status-online {% else %} status-offline {% endif %}"></span>
+                    <span class="bg-[var(--star-navy)] px-1 rounded-[2px] text-[7px] font-bold text-white">{{ painel.paineis|slice:":3" }}</span> 
+                </div>
+            {% endif %}
+
+            {% if painel.paineis|slice:"4:" %}
+                <div class="flex flex-col items-center gap-1">
+                    <span class="status-dot {% if painel.monitor_2.prefixo in painel.paineis %} status-online {% else %} status-offline {% endif %}"></span>
+                    <span class="bg-[var(--star-gold)] px-1 rounded-[2px] text-[7px] font-bold text-white">{{ painel.paineis|slice:"4:" }}</span> 
+                </div>
+            {% endif %}
+
+
+            </div>
+            
+        </div>
+
+    </div>
+    <div class="mt-1 pt-1 border-t border-gray-100 text-[8px] text-gray-500 font-medium">
+        <span class="text-[10px] bg-gray-100 px-0 py-0.2 rounded text-gray-600 font-mono"> {{ painel.hostname|escape }}</span>
+        <div>Log: {{ painel.data_login|slice:":10"|default:"--" }} | Att: {{ painel.ultima_atualizacao|date:"H:i:s" }}</div>
+        <!-- <div class="text-[#10b981] font-bold mt-0.5">Att: {{ painel.ultima_atualizacao|date:"H:i:s" }} • ONLINE</div> -->
+    </div>
+</div>   
