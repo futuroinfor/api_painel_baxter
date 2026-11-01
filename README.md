@@ -43,7 +43,7 @@ python run_server.py
 ```
 ## Autor
 Romilson J Tenorio
-- LinkedIn: [seu-perfil](https://www.linkedin.com/in/romilsontenorio/)
+- LinkedIn: Romilson J Tenório (https://www.linkedin.com/in/romilsontenorio/)
 - E-mail: romilson.tenorio@hotmail.com
 ## Licença
 Este projeto está sob a licença MIT. Veja [LICENSE](LICENSE) para mais detalhes.
