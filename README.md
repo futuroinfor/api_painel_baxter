@@ -9,6 +9,10 @@ Depois: A automação em questão, gera uma requisição para outra aplicação 
 ## Funcionalidades
 - Exibe os status dos painéis Online/Offline
 
+Preview:
+https://github.com/user-attachments/assets/e858fb2c-2e86-481b-bce3-466ca36f2eed
+
+
 ## Tecnologias
 - Python 3.9.12
 - Django 4.2
